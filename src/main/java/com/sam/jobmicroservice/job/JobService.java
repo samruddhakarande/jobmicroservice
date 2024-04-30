@@ -6,8 +6,8 @@ public interface JobService {
 
     List<Job> findAllJobs();
     Job postNewJob(Job job);
-    Job findJobById(long id);
-    Boolean deleteJobById(long id);
+    Job findJobById(Long id);
+    Boolean deleteJobById(Long id);
 
-    Job updateJob(long id, Job job);
+    Job updateJob(Long id, Job job);
 }

@@ -29,7 +29,7 @@ public class JobController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Job> findJobById(@PathVariable long id) {
+    public ResponseEntity<Job> findJobById(@PathVariable Long id) {
         Job foundJob = jobService.findJobById(id);
         if(foundJob != null) {
             return new ResponseEntity<>(foundJob, HttpStatus.OK);
@@ -38,7 +38,7 @@ public class JobController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> deleteJobById(@PathVariable long id) {
+    public ResponseEntity<String> deleteJobById(@PathVariable Long id) {
         boolean deleted = jobService.deleteJobById(id);
         if(deleted) {
             return new ResponseEntity<>("Job deleted successfully", HttpStatus.OK);
@@ -47,7 +47,7 @@ public class JobController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Job> updateJob(@PathVariable long id, @RequestBody Job job) {
+    public ResponseEntity<Job> updateJob(@PathVariable Long id, @RequestBody Job job) {
         Job modifiedJob = jobService.updateJob(id, job);
         if(modifiedJob != null) {
             return new ResponseEntity<>(modifiedJob, HttpStatus.OK);

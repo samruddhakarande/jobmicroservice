@@ -27,12 +27,12 @@ public class JobServiceImpl implements JobService {
     }
 
     @Override
-    public Job findJobById(long id) {
+    public Job findJobById(Long id) {
         return jobRepository.findById(id).orElse(null);
     }
 
     @Override
-    public Boolean deleteJobById(long id) {
+    public Boolean deleteJobById(Long id) {
        try {
            jobRepository.deleteById(id);
            return true;
@@ -44,7 +44,7 @@ public class JobServiceImpl implements JobService {
     }
 
     @Override
-    public Job updateJob(long id, Job updatedJob) {
+    public Job updateJob(Long id, Job updatedJob) {
         Optional<Job> optionalJob = jobRepository.findById(id);
         if(optionalJob.isPresent()) {
             Job job = optionalJob.get();
