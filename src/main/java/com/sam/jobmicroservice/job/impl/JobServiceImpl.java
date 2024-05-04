@@ -2,6 +2,8 @@ package com.sam.jobmicroservice.job.impl;
 import com.sam.jobmicroservice.job.Job;
 import com.sam.jobmicroservice.job.JobRepository;
 import com.sam.jobmicroservice.job.JobService;
+import com.sam.jobmicroservice.job.clients.CompanyClient;
+import com.sam.jobmicroservice.job.clients.ReviewClient;
 import com.sam.jobmicroservice.job.dto.JobWithCompanyAndReview;
 import com.sam.jobmicroservice.job.external.Company;
 import com.sam.jobmicroservice.job.external.Review;
@@ -22,11 +24,17 @@ public class JobServiceImpl implements JobService {
 
     public JobRepository jobRepository;
 
+    public CompanyClient companyClient;
+
+    public ReviewClient reviewClient;
+
     @Autowired
     private RestTemplate restTemplate;
 
-    public JobServiceImpl(JobRepository jobRepository) {
+    public JobServiceImpl(JobRepository jobRepository, CompanyClient companyClient, ReviewClient reviewClient) {
         this.jobRepository = jobRepository;
+        this.companyClient = companyClient;
+        this.reviewClient = reviewClient;
     }
 
     @Override
@@ -37,10 +45,8 @@ public class JobServiceImpl implements JobService {
     }
 
     private JobWithCompanyAndReview getJobWithCompany(Job job) {
-        Company company = restTemplate.getForObject("http://COMPANYMICROSERVICE:8081/companies/" + job.getCompanyId(), Company.class);
-       ResponseEntity<List<Review>> reviewEntity = restTemplate.exchange("http://REVIEWMICROSERVICE/reviews?companyId=" + job.getCompanyId(), HttpMethod.GET, null, new ParameterizedTypeReference<List<Review>>() {
-        });
-       List<Review> reviewList = reviewEntity.getBody();
+        Company company = companyClient.getCompany(job.getCompanyId());
+        List<Review> reviewList = reviewClient.getReviews(job.getCompanyId());
         JobWithCompanyAndReview jobWithCompanyAndReview = JobWithCompanyMapper.mapJobWithCompanyAndReview(job, company, reviewList);
         if(jobWithCompanyAndReview != null) {
             return jobWithCompanyAndReview;
