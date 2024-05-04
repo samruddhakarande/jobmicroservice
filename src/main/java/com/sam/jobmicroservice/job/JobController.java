@@ -1,5 +1,6 @@
 package com.sam.jobmicroservice.job;
 
+import com.sam.jobmicroservice.job.dto.JobWithCompanyAndReview;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,8 +18,8 @@ public class JobController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Job>> findAllJobs() {
-        List<Job> allJobs = jobService.findAllJobs();
+    public ResponseEntity<List<JobWithCompanyAndReview>> findAllJobs() {
+        List<JobWithCompanyAndReview> allJobs = jobService.findAllJobs();
         return new ResponseEntity<>(allJobs, HttpStatus.OK);
     }
 
@@ -29,8 +30,8 @@ public class JobController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Job> findJobById(@PathVariable Long id) {
-        Job foundJob = jobService.findJobById(id);
+    public ResponseEntity<JobWithCompanyAndReview> findJobById(@PathVariable Long id) {
+        JobWithCompanyAndReview foundJob = jobService.findJobById(id);
         if(foundJob != null) {
             return new ResponseEntity<>(foundJob, HttpStatus.OK);
         }
