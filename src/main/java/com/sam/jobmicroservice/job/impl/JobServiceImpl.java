@@ -8,6 +8,9 @@ import com.sam.jobmicroservice.job.dto.JobWithCompanyAndReview;
 import com.sam.jobmicroservice.job.external.Company;
 import com.sam.jobmicroservice.job.external.Review;
 import com.sam.jobmicroservice.job.mapper.JobWithCompanyMapper;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
+import io.github.resilience4j.retry.annotation.Retry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
@@ -15,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -28,6 +32,8 @@ public class JobServiceImpl implements JobService {
 
     public ReviewClient reviewClient;
 
+    int attempts = 0;
+
     @Autowired
     private RestTemplate restTemplate;
 
@@ -38,10 +44,18 @@ public class JobServiceImpl implements JobService {
     }
 
     @Override
+    //@CircuitBreaker(name = "companyBreaker", fallbackMethod="companyBreakerFallback")
+   // @Retry(name = "companyBreaker", fallbackMethod="companyBreakerFallback")
+    @RateLimiter(name = "companyBreaker", fallbackMethod="companyBreakerFallback")
     public List<JobWithCompanyAndReview> findAllJobs() {
+        System.out.println("Attempt: "+ ++attempts);
         List<Job> jobList = jobRepository.findAll();
         List<JobWithCompanyAndReview> jobWithCompanyAndReviewList = jobList.stream().map(this::getJobWithCompany).collect(Collectors.toList());
         return jobWithCompanyAndReviewList;
+    }
+
+    public List<String> companyBreakerFallback(Exception e) {
+        return Arrays.asList("Something wrong with the Company service");
     }
 
     private JobWithCompanyAndReview getJobWithCompany(Job job) {
